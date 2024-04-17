@@ -65,13 +65,11 @@ namespace CytologyManagmentScreen
             data.ColumnDefinitions.Clear();
             oraCon = GetConnection(_ntlsCon);
 
-            gridView_1 = new MainDataGrid(_ntlsCon, winformsHostSpecificLog, winformsHostAliq, winformsHostMain, lbl_SDGname, dal, oraCon, btn);
-            //gridView_1.ButtonClicked += HandleButtonClick;
+            gridView_1 = new MainDataGrid(_ntlsCon, winformsHostSpecificLog, winformsHostAliq, winformsHostMain, lbl_SDGname, dal, oraCon, btn, this);
 
             winformsHostMain.Child = gridView_1;
             
             
-
         }
 
         private void PrintRadGridView(RadGridView radGridView)
@@ -89,10 +87,7 @@ namespace CytologyManagmentScreen
         {
             PrintRadGridView(gridView_1.radGridView1);
         }
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
 
-        }
         public OracleConnection GetConnection(INautilusDBConnection ntlsCon)
         {
 
@@ -211,7 +206,39 @@ namespace CytologyManagmentScreen
 
         }
 
-        
+        private void radioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            RadioButton radioButton = sender as RadioButton;
+            switch (radioButton.Name)
+            {
+                case "radioButtonCyto":
+                    {
+                        ChangeDataList('C');
+                        break;
+                    }
+                case "radioButtonHisto":
+                    {
+                        ChangeDataList('B');
+                        break;
+                    }
+                case "radioButtonPap":
+                    {
+                        ChangeDataList('P');
+                        break;
+                    }
+            }
+        }
+        public char _type { get; set; }
+
+        private void ChangeDataList(char type)
+        {
+            _type = type;
+            DataListChanged?.Invoke(_type);
+        }
+
+        public delegate void DataListChangedEventHandler(char type);
+        public event DataListChangedEventHandler DataListChanged;
+
     }
 }
 

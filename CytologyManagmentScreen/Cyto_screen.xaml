@@ -12,13 +12,30 @@
             <ColumnDefinition Width="9.6*"/>
             <ColumnDefinition Width="0.2*"/>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
 
-        <Label x:Name="lblHeader" Grid.Row="0" Grid.ColumnSpan="2" FontFamily="Arial Rounded MT Bold" FontSize="40" HorizontalAlignment="Right" Grid.Column="1" Margin="0,0,0,388">מסך ניהול ציטולוגיה</Label>
-        <Button VerticalAlignment="Top" Content="הדפסת רשימת עבודה" Height="40" Grid.Row="0"  Grid.Column="1" FontSize="10" FontFamily="Arial Rounded MT Bold"  HorizontalAlignment="Left" Margin="0,15,0,0"  Click="Button_Click_1" Width="110" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-
+        <Label x:Name="lblHeader"  Grid.ColumnSpan="2" FontFamily="Arial Rounded MT Bold" FontSize="40" HorizontalAlignment="Right" Grid.Column="1" Margin="0,0,0,388">מסך ניהול כללי</Label>
+        <Grid Grid.Column="1"  Height="auto" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Width="auto" VerticalAlignment="Top" Content="🖨" Height="40" Grid.Row="0"  Grid.Column="0" FontSize="20" FontFamily="Arial Rounded MT Bold"  HorizontalAlignment="Left" Margin="0,15,0,0"  Click="Button_Click_1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+            <Border Margin="5,15,0,0" Width="auto" Padding="5" Height="30" BorderBrush="Black" BorderThickness="1" Background="AliceBlue" Grid.Column="1" VerticalAlignment="Top">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton FontSize="14" FontFamily="arial" IsChecked="True" Checked="radioButton_Checked" FlowDirection="RightToLeft" Grid.Column="2" Content="ציטולוגיה" Name="radioButtonCyto" Width="auto" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <RadioButton FontSize="14" FontFamily="arial" Checked="radioButton_Checked" FlowDirection="RightToLeft" Grid.Column="1" Content="היסטולוגיה" Name="radioButtonHisto" Width="auto" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <RadioButton FontSize="14" FontFamily="arial" Checked="radioButton_Checked" FlowDirection="RightToLeft" Grid.Column="0" Content="פאפ" Name="radioButtonPap" Width="auto" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+            
+        </Grid>
+       
+       
         <Grid x:Name="data" Grid.Column="1" Margin="0,70,0,20" Background="#FF8AB6DD">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="307.2"/>
@@ -30,7 +47,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Border Grid.Row="0" Margin="4" Background="#FF638CB1">
-                    <Label Content="מסך לוג עבור כלל מקרי ציטולוגיה" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="20" Foreground="White" FontFamily="Arial Rounded MT Bold"/>
+                    <Label Content="מסך לוג עבור כלל המקרים" HorizontalAlignment="Right"  VerticalAlignment="Center" FontSize="20" Foreground="White" FontFamily="Arial Rounded MT Bold"/>
                 </Border>
                 <WindowsFormsHost  x:Name="winformsHostMain" Margin="4" Grid.Row="1"/>
             </Grid>
@@ -45,7 +62,7 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" Background="Black" Margin="4">
                     <Label  Grid.Row="0" x:Name="lbl_SDGname" Content="😉" HorizontalAlignment="Left"  VerticalAlignment="Bottom" FontSize="25" FontWeight="Bold" Foreground="White"/>
-                    <Button Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" FontSize="10" FontFamily="Arial Rounded MT Bold" x:Name="btn" Content="חזרה למסך ראשי" HorizontalAlignment="Right"  Margin="4"  Click="Button_Click" Width="100"/>
+                    <Button Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" FontSize="10" FontFamily="Arial Rounded MT Bold" x:Name="btn" Content="חזרה למסך ראשי" HorizontalAlignment="Right"  Margin="4"  Width="100"/>
                 </Grid>
 
                 <Border Grid.Row="1" Margin="4" Background="#FF638CB1">

@@ -32,63 +32,46 @@ namespace CytologyManagmentScreen
 
         internal void SetGrid(long sDG_ID)
         {
-            List<SpecificSdgLogRow> rows = new List<SpecificSdgLogRow>();
 
             string query = $"SELECT sl.sdg_id,sl.time,sl.description,pe.PHRASE_DESCRIPTION as info " +
                 $"FROM lims_sys.sdg_log sl " +
                 $"LEFT JOIN lims_sys.PHRASE_ENTRY pe ON pe.PHRASE_ID = 241 AND pe.PHRASE_NAME = sl.APPLICATION_CODE WHERE sl.sdg_id ={sDG_ID}";
 
 
-
-
-            try
+            List<SpecificSdgLogRow> rowsFromDB = FetchDataFromDB(_oraCon, query, reader =>
             {
-                using (OracleCommand cmd = new OracleCommand(query, _oraCon))
+                return new SpecificSdgLogRow
                 {
+                    SdgId = Convert.ToInt32(reader[0]),
+                    Time = Convert.ToDateTime(reader[1]),
+                    Description = reader[2].ToString(),
+                    Info = reader[3].ToString()
+                };
+            });
 
-                    try
-                    {
-                        using (var reader = cmd.ExecuteReader())
-                        {
-
-                            while (reader.Read())
-                            {
-                                SpecificSdgLogRow clf = new SpecificSdgLogRow
-                                {
-                                    SdgId = Convert.ToInt32(reader[0]),
-                                    Time = Convert.ToDateTime(reader[1]),
-                                    Description = reader[2].ToString(),
-                                    Info = reader[3].ToString(),
-                                };
-
-                                rows.Add(clf);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-
-                        MessageBox.Show(2+ ex.Message);
-                    }
-
-                   
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(1+ ex.Message);
-            }
-
-
-
-
-
-
-            gridDataLog.DataSource = rows;
+            gridDataLog.DataSource = rowsFromDB;
         }
-        
+
+        private List<T> FetchDataFromDB<T>(OracleConnection connection, string query, Func<OracleDataReader, T> mapFunc)
+        {
+            List<T> result = new List<T>();
+
+            using (OracleCommand command = connection.CreateCommand())
+            {
+                command.CommandText = query;
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        T item = mapFunc(reader);
+                        result.Add(item);
+                    }
+                }
+            }
+
+            return result;
+        }
 
     }
 }
