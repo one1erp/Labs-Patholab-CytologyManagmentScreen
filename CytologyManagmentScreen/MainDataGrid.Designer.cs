@@ -34,52 +34,52 @@ namespace CytologyManagmentScreen
         private void InitializeComponent()
         {
             Telerik.WinControls.UI.TableViewDefinition tableViewDefinition1 = new Telerik.WinControls.UI.TableViewDefinition();
-            this.radGridView1 = new Telerik.WinControls.UI.RadGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).BeginInit();
+            this.mainRadGridView = new Telerik.WinControls.UI.RadGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.mainRadGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainRadGridView.MasterTemplate)).BeginInit();
             this.SuspendLayout();
             // 
-            // radGridView1
+            // mainRadGridView
             // 
-            this.radGridView1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.radGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.radGridView1.Location = new System.Drawing.Point(0, 0);
+            this.mainRadGridView.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.mainRadGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainRadGridView.Location = new System.Drawing.Point(0, 0);
             // 
             // 
             // 
-            this.radGridView1.MasterTemplate.AutoSizeColumnsMode = Telerik.WinControls.UI.GridViewAutoSizeColumnsMode.Fill;
-            this.radGridView1.MasterTemplate.ViewDefinition = tableViewDefinition1;
-            this.radGridView1.Name = "radGridView1";
-            this.radGridView1.ReadOnly = true;
-            this.radGridView1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.radGridView1.CellClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.radGridView1_CellClick);
-            this.radGridView1.CellFormatting += radGridView1_CellFormatting;
-            this.radGridView1.MasterTemplate.EnableFiltering = true;
-            this.radGridView1.MasterTemplate.ShowFilteringRow = false;
-            this.radGridView1.MasterTemplate.ShowHeaderCellButtons = true;
+            this.mainRadGridView.MasterTemplate.AutoSizeColumnsMode = Telerik.WinControls.UI.GridViewAutoSizeColumnsMode.Fill;
+            this.mainRadGridView.MasterTemplate.ViewDefinition = tableViewDefinition1;
+            this.mainRadGridView.Name = "mainRadGridView";
+            this.mainRadGridView.ReadOnly = true;
+            this.mainRadGridView.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.mainRadGridView.CellClick += new Telerik.WinControls.UI.GridViewCellEventHandler(this.mainRadGridView_CellClick);
+            this.mainRadGridView.CellFormatting += mainRadGridView_CellFormatting;
+            this.mainRadGridView.MasterTemplate.EnableFiltering = true;
+            this.mainRadGridView.MasterTemplate.ShowFilteringRow = false;
+            this.mainRadGridView.MasterTemplate.ShowHeaderCellButtons = true;
            
             // 
             // 
             // 
-            this.radGridView1.RootElement.AccessibleDescription = null;
-            this.radGridView1.RootElement.AccessibleName = null;
-            this.radGridView1.RootElement.ControlBounds = new System.Drawing.Rectangle(0, 0, 300, 187);
-            this.radGridView1.Size = new System.Drawing.Size(347, 329);
-            this.radGridView1.TabIndex = 1;
+            this.mainRadGridView.RootElement.AccessibleDescription = null;
+            this.mainRadGridView.RootElement.AccessibleName = null;
+            this.mainRadGridView.RootElement.ControlBounds = new System.Drawing.Rectangle(0, 0, 300, 187);
+            this.mainRadGridView.Size = new System.Drawing.Size(347, 329);
+            this.mainRadGridView.TabIndex = 1;
             // 
             // MainDataGrid
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.radGridView1);
+            this.Controls.Add(this.mainRadGridView);
             this.Name = "MainDataGrid";
             this.Size = new System.Drawing.Size(347, 329);
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1.MasterTemplate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.radGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainRadGridView.MasterTemplate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainRadGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
-        private void radGridView1_CellFormatting(object sender, CellFormattingEventArgs e)
+        private void mainRadGridView_CellFormatting(object sender, CellFormattingEventArgs e)
         {
             if (e.CellElement is GridDataCellElement)
             {
@@ -97,6 +97,6 @@ namespace CytologyManagmentScreen
 
         #endregion
 
-        public Telerik.WinControls.UI.RadGridView radGridView1;
+        public Telerik.WinControls.UI.RadGridView mainRadGridView;
     }
 }

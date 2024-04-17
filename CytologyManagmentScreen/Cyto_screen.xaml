@@ -19,8 +19,8 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Width="auto" VerticalAlignment="Top" Content="🖨" Height="40" Grid.Row="0"  Grid.Column="0" FontSize="20" FontFamily="Arial Rounded MT Bold"  HorizontalAlignment="Left" Margin="0,15,0,0"  Click="Button_Click_1" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
-            <Border Margin="5,15,0,0" Width="auto" Padding="5" Height="30" BorderBrush="Black" BorderThickness="1" Background="AliceBlue" Grid.Column="1" VerticalAlignment="Top">
+            <Button Width="auto" VerticalAlignment="Top" Content="🖨" Height="40" Grid.Row="0"  Grid.Column="0" FontSize="20" FontFamily="Arial Rounded MT Bold"  HorizontalAlignment="Left" Margin="0,15,0,0"  Click="BtnPrint_Click" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+            <Border Margin="5,15,0,0" Width="auto" Padding="5" Height="30" BorderBrush="Black" BorderThickness="0.5" Background="AliceBlue" Grid.Column="1" VerticalAlignment="Top">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -52,7 +52,7 @@
                 <WindowsFormsHost  x:Name="winformsHostMain" Margin="4" Grid.Row="1"/>
             </Grid>
 
-            <Grid x:Name="detailesGrid" Grid.Column="0" >
+            <Grid x:Name="detailsGrid" Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="auto"/>

@@ -1,13 +1,7 @@
 ﻿using LSSERVICEPROVIDERLib;
-using Microsoft.Office.Interop.Excel;
-using Oracle.ManagedDataAccess.Client;
-using Patholab_Common;
 using Patholab_DAL_V1;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web.UI.WebControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms.Integration;
@@ -21,41 +15,35 @@ namespace CytologyManagmentScreen
     public partial class MainDataGrid : System.Windows.Forms.UserControl
     {
 
-        private INautilusDBConnection _ntlsCon;
-
         private DataLayer _dal = null;
-
-
         private WindowsFormsHost winformsHostAliq;
         private WindowsFormsHost winformsHostSpecificLog;
         private WindowsFormsHost winformsHostMain;
-        private System.Windows.Controls.Label _label;
-        LogDataGrid gridView_2;
-        AliqDataGrid gridView_3;
-        OracleConnection _oraCon;
-
-
+        private Label _label;
+        public event EventHandler ButtonChangeLayoutClicked;
+        public event EventHandler GridFilterChanged;
+        LogDataGrid specificSDGLogDataGrid;
+        AliqDataGrid aliqDataGrid;
         GridViewRowInfo totalRow;
-        public MainDataGrid(INautilusDBConnection ntlsCon, WindowsFormsHost a, WindowsFormsHost b, WindowsFormsHost c, System.Windows.Controls.Label label, DataLayer dal, OracleConnection oraCon, System.Windows.Controls.Button button, Cyto_screen cyto_screen)
+        Dictionary<char, object> DataList = new Dictionary<char, object> { { 'C', null }, { 'B', null }, { 'P', null } };
+
+        public MainDataGrid(WindowsFormsHost forMainArea, WindowsFormsHost forSpecificRowLogArea, WindowsFormsHost forAliqsArea, Label label, DataLayer dal, Button button, Cyto_screen cyto_screen)
         {
             InitializeComponent();
-            _ntlsCon = ntlsCon;
-            winformsHostSpecificLog = a;
-            winformsHostAliq = b;
-            winformsHostMain = c;
+            winformsHostMain = forMainArea;
+            winformsHostSpecificLog = forSpecificRowLogArea;
+            winformsHostAliq = forAliqsArea;
+
             _label = label;
             _dal = dal;
-            _oraCon = oraCon;
 
-           
-            init();
+            InitAreas();
 
-            button.Click += Button_Clicked;
-            radGridView1.FilterChanged += RadGridView_FilterChanged;           
+            button.Click += BtnChangeLayout_Clicked;
+            mainRadGridView.FilterChanged += RadGridView_FilterChanged;
             cyto_screen.DataListChanged += HandleDataListChanged;
 
         }
-        Dictionary<char, object> DataList = new Dictionary<char, object> { { 'C', null }, { 'B', null }, { 'P', null } };
 
         private void HandleDataListChanged(char type)
         {
@@ -69,52 +57,30 @@ namespace CytologyManagmentScreen
         {
             // Notify WPF application about filtering
             GridFilterChanged?.Invoke(this, EventArgs.Empty);
-            totalRow.Cells[6].Value = $"{radGridView1.ChildRows.Count-1} מקרים בתהליך";
+            totalRow.Cells[6].Value = $"{mainRadGridView.ChildRows.Count - 1} מקרים בתהליך";
         }
 
-        public event EventHandler ButtonClicked;
-
-
-        public int GetRowCount()
-        {
-            return radGridView1.ChildRows.Count;
-        }
-
-
-        public event EventHandler GridFilterChanged;
-
-
-
-        private void Button_Clicked(object sender, RoutedEventArgs e)
-        {
-            // Raise the ButtonClicked event when the Button is clicked
-            ButtonClicked?.Invoke(this, EventArgs.Empty);
+        private void BtnChangeLayout_Clicked(object sender, RoutedEventArgs e)
+        {            
             Grid grid = (Grid)winformsHostMain.Parent;
             Grid gridFather = (Grid)grid.Parent;
             RestoreSavedGridLayout(gridFather);
         }
 
-        private void init()
-
+        private void InitAreas()
         {
-
             try
-
             {
-
-                gridView_2 = new LogDataGrid(_oraCon);
-
-                gridView_3 = new AliqDataGrid(_dal);
-
                 SetList('C');
 
-           
+                specificSDGLogDataGrid = new LogDataGrid(_dal);
+
+                aliqDataGrid = new AliqDataGrid(_dal);
+
             }
-
             catch (Exception ex)
-
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
 
         }
@@ -124,50 +90,52 @@ namespace CytologyManagmentScreen
             if (DataList[type] == null)
             {
                 Mouse.OverrideCursor = Cursors.Wait;
-                radGridView1.DataSource = ExecuteQueryAndGetResults(type);
+                mainRadGridView.DataSource = ExecuteQueryAndGetResults(type);
                 Mouse.OverrideCursor = null;
             }
             else
             {
-                radGridView1.DataSource = DataList[type];
+                mainRadGridView.DataSource = DataList[type];
             }
 
-            if (!radGridView1.MasterTemplate.Rows[radGridView1.MasterTemplate.Rows.Count - 1].Cells[6].ToString().Contains("מקרים"))
-            {
-                totalRow = radGridView1.MasterTemplate.Rows.AddNew();
-                totalRow.Cells[6].Value = $"{radGridView1.ChildRows.Count-1} מקרים בתהליך";
-                radGridView1.CurrentRow = radGridView1.MasterTemplate.Rows[0];
-                totalRow.PinPosition = PinnedRowPosition.Bottom;
-                
-            }
-
+            ChangeCurrentListNumOfRows();
         }
-        private List<T> FetchDataFromDB<T>(OracleConnection connection, string query, Func<OracleDataReader, T> mapFunc)
+
+        private void ChangeCurrentListNumOfRows()
         {
-            List<T> result = new List<T>();
+            var currentRowList = mainRadGridView.MasterTemplate.Rows;
+            currentRowList.RemoveAt(currentRowList.Count - 1);
+            totalRow = currentRowList.AddNew();
+            totalRow.Cells[6].Value = $"{currentRowList.Count - 1} מקרים בתהליך";
+            mainRadGridView.CurrentRow = currentRowList[0];
+            totalRow.PinPosition = PinnedRowPosition.Bottom;
+        }
 
-            using (OracleCommand command = connection.CreateCommand())
+        private void mainRadGridView_CellClick(object sender, GridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                command.CommandText = query;
-
-                using (OracleDataReader reader = command.ExecuteReader())
+                var sdg = mainRadGridView.Rows[e.RowIndex].DataBoundItem as SDGsLogRowList;
+                if (sdg != null)
                 {
-                    while (reader.Read())
-                    {
-                        T item = mapFunc(reader);
-                        result.Add(item);
-                    }
+                    SetGridLayout();
+                    aliqDataGrid.SetDataGridAliquots(sdg.SDG_ID);
+                    winformsHostAliq.Child = aliqDataGrid;
+
+                    _label.Content = sdg.U_Patholab_Number;
+
+                    specificSDGLogDataGrid.SetGrid(sdg.SDG_ID);
+                    winformsHostSpecificLog.Child = specificSDGLogDataGrid;
+
                 }
             }
-
-            return result;
         }
 
         public List<SDGsLogRowList> ExecuteQueryAndGetResults(char type)
         {
             string query = $"select * from lims.SDG_LOG_CYTOLOGY where name LIKE '{type}%'";
 
-            List<SDGsLogRowList> resultList = FetchDataFromDB(_oraCon, query, reader =>
+            List<SDGsLogRowList> resultList = _dal.FetchDataFromDB(query, reader =>
             {
                 return new SDGsLogRowList
                 {
@@ -188,52 +156,32 @@ namespace CytologyManagmentScreen
         }
 
 
-        private void radGridView1_CellClick(object sender, GridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                var sdg = radGridView1.Rows[e.RowIndex].DataBoundItem as SDGsLogRowList;
-                if (sdg != null)
-                {
-                    SetGridLayout();
-                    gridView_3.SetDataGridAliquots(sdg.SDG_ID);
-                    winformsHostAliq.Child = gridView_3;
-
-                    _label.Content = sdg.U_Patholab_Number;
-
-                    gridView_2.SetGrid(sdg.SDG_ID);
-                    winformsHostSpecificLog.Child = gridView_2;
-
-                }
-            }
-        }
-
 
         #region grid layouts functions
         private void RestoreSavedGridLayout(Grid gridFather)
         {
-            Grid grid1 = (Grid)winformsHostAliq.Parent;
-            grid1.Visibility = Visibility.Collapsed;
+            Grid detailsGrid = (Grid)winformsHostAliq.Parent;
+            detailsGrid.Visibility = Visibility.Collapsed;
             Grid grid = (Grid)winformsHostMain.Parent;
-            Grid gridFather_1 = (Grid)grid.Parent;
-            gridFather_1.ColumnDefinitions.Clear();
+            Grid containerGrid = (Grid)grid.Parent;
+            containerGrid.ColumnDefinitions.Clear();
         }
         private void SetGridLayout()
         {
             Grid grid = (Grid)winformsHostMain.Parent;
-            Grid gridFather = (Grid)grid.Parent;
+            Grid containerGrid = (Grid)grid.Parent;
 
             if (grid != null)
             {
 
                 // Apply new pagination settings
-                gridFather.ColumnDefinitions.Clear();
+                containerGrid.ColumnDefinitions.Clear();
                 ColumnDefinition colDef1 = new ColumnDefinition();
                 colDef1.Width = new GridLength(1, GridUnitType.Star);
                 ColumnDefinition colDef2 = new ColumnDefinition();
                 colDef2.Width = new GridLength(1.5, GridUnitType.Star);
-                gridFather.ColumnDefinitions.Add(colDef1);
-                gridFather.ColumnDefinitions.Add(colDef2);
+                containerGrid.ColumnDefinitions.Add(colDef1);
+                containerGrid.ColumnDefinitions.Add(colDef2);
             }
 
             Grid grid1 = (Grid)winformsHostAliq.Parent;

@@ -1,5 +1,4 @@
-﻿using Patholab_Common;
-using Patholab_DAL_V1;
+﻿using Patholab_DAL_V1;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,7 +10,7 @@ namespace CytologyManagmentScreen
     public partial class AliqDataGrid : UserControl
     {
 
-        private DataLayer dal = null;
+        private DataLayer dal;
 
         private List<PHRASE_ENTRY> aliqStationList;
 
@@ -21,48 +20,51 @@ namespace CytologyManagmentScreen
             this.dal = dal;            
         }
 
-
         public void SetDataGridAliquots(long _sdg_id)
         {
             try
             {
+                //get current sdg by id
                 var currentSdg = dal.FindBy<SDG>(x => x.SDG_ID == _sdg_id).FirstOrDefault();
-                var samplesList = currentSdg.SAMPLEs.ToList();
-                var aliqList = new List<ALIQUOT>();
-                var aliqUserList = new List<ALIQUOT_USER>();
 
-                aliqList = samplesList.SelectMany(x => x.ALIQUOTs).ToList();
-                aliqUserList = aliqList.Select(x => x.ALIQUOT_USER).ToList();
+                //get current sdg's aliquot_user list
+                var aliqUserList = currentSdg.SAMPLEs.SelectMany(s => s.ALIQUOTs).ToList().Select(a => a.ALIQUOT_USER).ToList();
 
+                //get all aliquot_station names 
                 aliqStationList = dal.GetPhraseEntries("AliquotStationTrace").ToList();
 
+                var aliqRowList = aliqUserList.Select(item => {
 
-                var aliqRowList = (from aliq in aliqUserList
-                                   select new AliqRow()
-                                   {
-                                       ALIQUOT_ID = aliq.ALIQUOT_ID,
-                                       U_ALIQUOT_STATION = aliq.U_ALIQUOT_STATION != null ? GetPhraseInfo(aliq.U_ALIQUOT_STATION) : null,
-                                       U_GLASS_TYPE = aliq.U_GLASS_TYPE,
-                                       U_IS_CELL_BLOCK = aliq.U_IS_CELL_BLOCK,
-                                       U_LAST_LABORANT = aliq.OPERATOR != null ? aliq.OPERATOR.FULL_NAME : null,
-                                       U_OLD_ALIQUOT_STATION = aliq.U_OLD_ALIQUOT_STATION != null ? GetPhraseInfo(aliq.U_OLD_ALIQUOT_STATION) : null,
-                                       U_ALIQUOT_NAME = aliq.ALIQUOT.NAME
-                                   }).ToList();
+                    var uAliquotStation = GetPhraseInfo(item.U_ALIQUOT_STATION);
+                    var uOldAliquotStation = GetPhraseInfo(item.U_OLD_ALIQUOT_STATION);
+
+                    return new AliqRow()
+                    {
+                        ALIQUOT_ID = item.ALIQUOT_ID,
+                        U_ALIQUOT_STATION = uAliquotStation,
+                        U_GLASS_TYPE = item.U_GLASS_TYPE,
+                        U_IS_CELL_BLOCK = item.U_IS_CELL_BLOCK,
+                        U_LAST_LABORANT = item.OPERATOR?.FULL_NAME,
+                        U_OLD_ALIQUOT_STATION = uOldAliquotStation,
+                        U_ALIQUOT_NAME = item.ALIQUOT.NAME
+                    };
+                }).ToList();
 
                 dataGridAliquots.DataSource = aliqRowList;
             }
             catch (Exception ex)
             {
-
-                Logger.WriteLogFile(ex);
-
+                MessageBox.Show($"SetDataGridAliquots {ex.Message}");
             }
         }
-        
+
         private string GetPhraseInfo(string phraseName)
         {
-            return aliqStationList.FirstOrDefault(x=>x.PHRASE_NAME == phraseName).PHRASE_INFO;
+            var phraseEntry = aliqStationList.FirstOrDefault(x => x.PHRASE_NAME == phraseName);
+            return phraseEntry?.PHRASE_INFO ?? string.Empty;
         }
+
+
     }
 }
 

@@ -1,7 +1,6 @@
 ﻿using LSExtensionWindowLib;
 using LSSERVICEPROVIDERLib;
 using Oracle.ManagedDataAccess.Client;
-using Patholab_Common;
 using Patholab_DAL_V1;
 using System;
 using System.Collections.Generic;
@@ -18,27 +17,24 @@ namespace CytologyManagmentScreen
 {
     public partial class LogDataGrid : UserControl
     {
-        string connectionString;
-        private INautilusDBConnection ntlsCon;
-        OracleConnection _oraCon;
 
-        public LogDataGrid(OracleConnection oraCon)
+        private DataLayer _dal;
+
+        public LogDataGrid(DataLayer dal)
         {
-            _oraCon = oraCon;
             InitializeComponent();
-            //connectionString = Utils.ConString;
+            _dal = dal;
         }
 
 
-        internal void SetGrid(long sDG_ID)
+        internal void SetGrid(long sdg_id)
         {
 
             string query = $"SELECT sl.sdg_id,sl.time,sl.description,pe.PHRASE_DESCRIPTION as info " +
                 $"FROM lims_sys.sdg_log sl " +
-                $"LEFT JOIN lims_sys.PHRASE_ENTRY pe ON pe.PHRASE_ID = 241 AND pe.PHRASE_NAME = sl.APPLICATION_CODE WHERE sl.sdg_id ={sDG_ID}";
+                $"LEFT JOIN lims_sys.PHRASE_ENTRY pe ON pe.PHRASE_ID = 241 AND pe.PHRASE_NAME = sl.APPLICATION_CODE WHERE sl.sdg_id ={sdg_id}";
 
-
-            List<SpecificSdgLogRow> rowsFromDB = FetchDataFromDB(_oraCon, query, reader =>
+            List<SpecificSdgLogRow> rowsFromDB = _dal.FetchDataFromDB(query, reader =>
             {
                 return new SpecificSdgLogRow
                 {
@@ -50,28 +46,6 @@ namespace CytologyManagmentScreen
             });
 
             gridDataLog.DataSource = rowsFromDB;
-        }
-
-        private List<T> FetchDataFromDB<T>(OracleConnection connection, string query, Func<OracleDataReader, T> mapFunc)
-        {
-            List<T> result = new List<T>();
-
-            using (OracleCommand command = connection.CreateCommand())
-            {
-                command.CommandText = query;
-
-                using (OracleDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        T item = mapFunc(reader);
-                        result.Add(item);
-                    }
-                }
-            }
-
-            return result;
-        }
-
+        }       
     }
 }
