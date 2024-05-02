@@ -19,7 +19,7 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <Button Width="auto" VerticalAlignment="Top" Content="🖨" Height="40" Grid.Row="0"  Grid.Column="0" FontSize="20" FontFamily="Arial Rounded MT Bold"  HorizontalAlignment="Left" Margin="0,15,0,0"  Click="BtnPrint_Click" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+            <Button FontSize="15" Width="50" Height="40" VerticalAlignment="Top" Content="הדפס" Grid.Row="0"  Grid.Column="0" FontFamily="Arial Rounded MT Bold"  HorizontalAlignment="Left" Margin="0,15,0,0"  Click="BtnPrint_Click" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
             <Border Margin="5,15,0,0" Width="auto" Padding="5" Height="30" BorderBrush="Black" BorderThickness="0.5" Background="AliceBlue" Grid.Column="1" VerticalAlignment="Top">
                 <Grid>
                     <Grid.ColumnDefinitions>

@@ -24,14 +24,14 @@ namespace CytologyManagmentScreen
         private INautilusServiceProvider sp;
         public INautilusDBConnection _ntlsCon;
         private DataLayer dal;
-
+        private OracleConnection _oraCon;
         private MainDataGrid mainDataGrid;
         public delegate void DataListChangedEventHandler(char type);
         public event DataListChangedEventHandler DataListChanged;
         private char _type;
 
 
-        public Cyto_screen(INautilusServiceProvider sp, INautilusProcessXML xmlProcessor, INautilusDBConnection _ntlsCon,
+        public Cyto_screen(OracleConnection oracon,  INautilusServiceProvider sp, INautilusProcessXML xmlProcessor, INautilusDBConnection _ntlsCon,
            IExtensionWindowSite2 _ntlsSite, INautilusUser _ntlsUser, DataLayer _dal)
         {
             if (_ntlsUser.GetRoleName().ToUpper() == "DEBUG") Debugger.Launch();
@@ -44,6 +44,7 @@ namespace CytologyManagmentScreen
             this._ntlsUser = _ntlsUser;
             this.DataContext = this;
             this.dal = _dal;
+            this._oraCon = oracon;
         }
 
         public void Initilaize()
@@ -52,7 +53,7 @@ namespace CytologyManagmentScreen
             detailsGrid.Visibility = Visibility.Collapsed;
             data.ColumnDefinitions.Clear();
 
-            mainDataGrid = new MainDataGrid(winformsHostMain, winformsHostSpecificLog, winformsHostAliq, lbl_SDGname, dal, btn, this);
+            mainDataGrid = new MainDataGrid(_oraCon, winformsHostMain, winformsHostSpecificLog, winformsHostAliq, lbl_SDGname, dal, btn, this);
 
             winformsHostMain.Child = mainDataGrid;
                         

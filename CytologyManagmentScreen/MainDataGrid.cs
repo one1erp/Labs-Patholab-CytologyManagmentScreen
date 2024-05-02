@@ -1,4 +1,5 @@
 ﻿using LSSERVICEPROVIDERLib;
+using Oracle.ManagedDataAccess.Client;
 using Patholab_DAL_V1;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,9 @@ namespace CytologyManagmentScreen
         LogDataGrid specificSDGLogDataGrid;
         AliqDataGrid aliqDataGrid;
         GridViewRowInfo totalRow;
-        Dictionary<char, object> DataList = new Dictionary<char, object> { { 'C', null }, { 'B', null }, { 'P', null } };
+        Dictionary<char, object> DataDictionary = new Dictionary<char, object> { { 'C', null }, { 'B', null }, { 'P', null } };
 
-        public MainDataGrid(WindowsFormsHost forMainArea, WindowsFormsHost forSpecificRowLogArea, WindowsFormsHost forAliqsArea, Label label, DataLayer dal, Button button, Cyto_screen cyto_screen)
+        public MainDataGrid(OracleConnection oracon, WindowsFormsHost forMainArea, WindowsFormsHost forSpecificRowLogArea, WindowsFormsHost forAliqsArea, Label label, DataLayer dal, Button button, Cyto_screen cyto_screen)
         {
             InitializeComponent();
             winformsHostMain = forMainArea;
@@ -39,8 +40,8 @@ namespace CytologyManagmentScreen
 
             InitAreas();
 
-            button.Click += BtnChangeLayout_Clicked;
             mainRadGridView.FilterChanged += RadGridView_FilterChanged;
+            button.Click += BtnChangeLayout_Clicked;
             cyto_screen.DataListChanged += HandleDataListChanged;
 
         }
@@ -71,6 +72,7 @@ namespace CytologyManagmentScreen
         {
             try
             {
+                //default 1st loading - cytology
                 SetList('C');
 
                 specificSDGLogDataGrid = new LogDataGrid(_dal);
@@ -87,7 +89,7 @@ namespace CytologyManagmentScreen
 
         private void SetList(char type)
         {
-            if (DataList[type] == null)
+            if (DataDictionary[type] == null)
             {
                 Mouse.OverrideCursor = Cursors.Wait;
                 mainRadGridView.DataSource = ExecuteQueryAndGetResults(type);
@@ -95,7 +97,7 @@ namespace CytologyManagmentScreen
             }
             else
             {
-                mainRadGridView.DataSource = DataList[type];
+                mainRadGridView.DataSource = DataDictionary[type];
             }
 
             ChangeCurrentListNumOfRows();
@@ -151,7 +153,7 @@ namespace CytologyManagmentScreen
                 };
             });
 
-            DataList[type] = resultList;
+            DataDictionary[type] = resultList;
             return resultList;
         }
 
